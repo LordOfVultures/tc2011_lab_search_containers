@@ -1,31 +1,51 @@
 import fileinput
 
-queue = []
+expansion_queue = []
+visited_queue = []
 initial_state = []
 end_state = []
 
-def heuristic_function():
+def find_crate(crate, state):
+	for i, stack in enumerate(state):
+		try:
+			j = stack.index(crate)
+		except ValueError:
+			continue
+		return i, j
+	return None
+
+def gcost(crate, state):
+	#cost of rising and put down the crate = 0.5, cost of moving the crate between stack = 1 * distance
+	value = 0.5 + abs(find_crate(crate, state)[0] - find_crate(crate, end_state)[0]) + 0.5
 	return value
-	
-def gcost():
+
+def hcost(state):
+	#Heuristic: the number of missplaced creates
+	missplaced = 0
+	for i, stack in enumerate(state):
+		for j, crate in enumerate(stack):
+			if find_crate(crate, state) != find_crate(crate, end_state):
+				missplaced += 1
+	return missplaced
+
+def fcost(crate, state):
+	value = gcost(crate, state) + hcost(state)
 	return value
-	
-def hcost():
-	return value
-	
-def fcost():
-	return value
-	
+
 def create_state():
+	#missing code
 	return state
-	
-def expand():
-	print("hello")
+
+def expand(state):
+	#missing code
 	return
 
 def check_end(state):
 	for i, element in enumerate(state):
-		print(element)
+		if end_state != ['X']:
+			if element != end_state[i]:
+				return False
+	return True
 
 input = fileinput.input()
 i = 0
@@ -54,5 +74,3 @@ for line in input: #read line by line of stdin
 		for i, element in enumerate(end_state):
 			end_state[i] = element.split(",")
 		print(end_state)
-print("sup")
-	

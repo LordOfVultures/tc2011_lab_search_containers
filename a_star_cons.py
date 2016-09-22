@@ -14,6 +14,13 @@ def find_crate(crate, state):
 		return i, j
 	return None
 
+def move_crate(state, move_from, move_to):
+	#moves the crate on top from one stack to another
+	crate = state[move_from][-1]
+	del state[move_from][-1]
+	state[move_to].append(crate)
+	return state
+
 def gcost(crate, state):
 	#cost of rising and put down the crate = 0.5, cost of moving the crate between stack = 1 * distance
 	value = 0.5 + abs(find_crate(crate, state)[0] - find_crate(crate, end_state)[0]) + 0.5
@@ -32,15 +39,12 @@ def fcost(crate, state):
 	value = gcost(crate, state) + hcost(state)
 	return value
 
-def create_state():
-	#missing code
-	return state
-
 def expand(state):
 	#missing code
 	return
 
 def check_end(state):
+	#Checks if a state is an end state
 	for i, element in enumerate(state):
 		if end_state != ['X']:
 			if element != end_state[i]:
@@ -74,3 +78,5 @@ for line in input: #read line by line of stdin
 		for i, element in enumerate(end_state):
 			end_state[i] = element.split(",")
 		print(end_state)
+new_state = move_crate(initial_state, 0, 1)
+print(new_state)

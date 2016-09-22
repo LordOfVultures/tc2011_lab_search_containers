@@ -1,7 +1,10 @@
 import fileinput
+import operator
 
 expansion_queue = []
+possibilities_queue = []
 visited_queue = []
+max_stack = 0
 initial_state = []
 end_state = []
 
@@ -19,7 +22,8 @@ def move_crate(state, move_from, move_to):
 	crate = state[move_from][-1]
 	del state[move_from][-1]
 	state[move_to].append(crate)
-	return state
+	cost = fcost(crate, state)
+	return state, cost
 
 def gcost(crate, state):
 	#cost of rising and put down the crate = 0.5, cost of moving the crate between stack = 1 * distance
@@ -42,6 +46,15 @@ def fcost(crate, state):
 def expand(state):
 	#missing code
 	return
+
+def start_search():
+	for i, stack in enumerate(initial_state):
+		for j, new_stack in enumerate(initial_state):
+			if j != i:
+				if len(new_stack) < max_stack:
+					state, cost = move_crate(initial_state, i, j)
+					possibilities_queue.append([state, cost, i, j])
+	expansion_queue = sorted(possibilities_queue, key=operator.itemgetter(1))
 
 def check_end(state):
 	#Checks if a state is an end state
@@ -79,4 +92,5 @@ for line in input: #read line by line of stdin
 			end_state[i] = element.split(",")
 		print(end_state)
 new_state = move_crate(initial_state, 0, 1)
-print(new_state)
+start_search()
+print(expansion_queue)

@@ -8,6 +8,14 @@ forExploring=[]
 max_stack = []
 
 
+class Node():
+    def __init__(self, state, parent, action, path_cost):
+        self.state = state
+        self.parent = parent
+        self.action = action
+        self.path_cost = path_cost
+
+
 #function that reads input
 def readingInput(): 
     #input = fileinput.input()
@@ -61,7 +69,11 @@ def bfs():
     while(forExploring and comparingNode( end_state,current_node ) != 0 ):#if not empty
         current_node=forExploring.pop(0)#getting first element of the list
         print ("Current",current_node)
-        creatingNode(current_node)        
+        creatingNode(current_node)
+        
+        if (not forExploring and comparingNode( end_state,current_node ) != 0 ): #if empty
+            print("No solution found")
+                    
         
 #method for comparing the nodes with the end node
 def comparingNode(endNode,currentNode ):
@@ -78,7 +90,6 @@ def creatingNode(state):
     leaves_nodes=[] #variable that has the results of the nodes
     
     for element in range(len(state)): 
-        #print ("Elemento:",state[element]) 
         for listNode in range(len(state)):
             list_Nodes=copy.deepcopy(state) #copying the state
             if (list_Nodes[element]): #if not empty
@@ -88,7 +99,7 @@ def creatingNode(state):
                     list_Nodes[element].pop(0)#remove the element from the list                       
                 
                 
-                if (element != listNode ):  #not moving to the same place
+                if (element != listNode and len(list_Nodes[listNode]) < max_stack ):  #not moving to the same place and the lenght is less or equal to stack
                                                         
                     list_Nodes[listNode].append(state[element][0]) #adding the new element to the assigned space
                     leaves_nodes.append(list_Nodes) #Saving Result

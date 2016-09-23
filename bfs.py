@@ -1,29 +1,93 @@
 import fileinput
+import copy
 
-queue = []
+initial_state = []
+end_state = []
+visited = []
+forExploring=[]
 
-input = fileinput.input()
-i = 0
-for line in input:
-  if i == 0:
-    max_stack = int(line.strip())
-    print (max_stack)
-  if i == 1:
-    j = 0
-    initial_state = line.strip()
-    initial_state = initial_state.replace(" ", "")
-    initial_state = initial_state.replace("(", "")
-    initial_state = initial_state.replace(")", "")
-    initial_state = initial_state.split(';')
-    try:
-      while initial_state[j] is not None:
-        list(initial_state[j])
-        j += 1
-    except IndexError:
-    	pass
-    print(initial_state)
-  if i == 2:
-    end_state = line.strip()
+leaves_nodes =[]
+
+#function that reads input
+def readingInput(): 
+    #input = fileinput.input()
+    archi=open('Test1.txt','r')
+    global end_state
+    global initial_state
+    i = 0
+    #for line in input:  # read line by line of stdin
+    for line in archi.readlines():  
+        i += 1
+        if i == 1:  # reads first line, which contains maximum stack height
+            max_stack = int(line.strip())
+            print (max_stack)
+        elif i == 2:  # reads second line, which contains the intial state
+            # the following block formats the line and creates the initial state data structure
+            initial_state = line.strip()
+            initial_state = initial_state.replace(" ", "")
+            initial_state = initial_state.replace("(", "")
+            initial_state = initial_state.replace(")", "")
+            initial_state = initial_state.split(';')
+            for i, element in enumerate(initial_state):
+                initial_state[i] = element.split(",")
+            print(initial_state)
+        elif i == 3:  # reads the third line, which contains the end state
+            # the following block formats the line and creates the end state data structure
+            end_state = line.strip()
+            end_state = end_state.replace(" ", "")
+            end_state = end_state.replace("(", "")
+            end_state = end_state.replace(")", "")
+            end_state = end_state.split(';')
+            for i, element in enumerate(end_state):
+                end_state[i] = element.split(",")
+            print(end_state)
+        
     
-    print(end_state)
-  i += 1
+    archi.close()
+
+
+def bfs():
+    global initial_state
+    global end_state
+    global visited 
+    global forExploring
+    forExploring.append(initial_state)
+    visited.append(initial_state)
+    current_node =[]
+    while(forExploring or current_node != end_state ):#if not empty
+        current_node=forExploring.pop(0)#getting first element of the list
+        print ("Current",current_node)
+        creatingNode(current_node)        
+        comparingLists(visited,leaves_nodes)
+    
+
+def creatingNode(state):
+    global leaves_nodes #variable that has the results of the nodes
+    
+    
+    for element in range(len(state)): 
+        #print ("Elemento:",state[element]) 
+               
+        for listNode in range(len(state)):
+            list_Nodes=copy.deepcopy(state) #copying the state
+            list_Nodes[element].remove(state[element][0]) #remove the element from the list            
+            
+            if (element != listNode):                
+                list_Nodes[listNode].append(state[element][0]) #adding the new element to the assigned space
+                #print ("        Final",list_Nodes)
+                leaves_nodes.append(list_Nodes) #Saving Result
+    
+def comparingLists(listVisited , listNewNodes):
+        global visited
+        newNodes=[] 
+        
+        for nodeVisited in range(len(listVisited)):
+            for nodeNew in range(len(listNewNodes)):
+                if (cmp(listVisited[nodeVisited], listNewNodes[nodeNew]) != 0): #if the nodes are not in the visited list
+                    newNodes.append(listNewNodes[nodeNew]) #adding new nodes to newNodes
+        forExploring.append(newNodes) #adding new nodes to forExploring
+        visited.append(newNodes) #adding new nodes to visited
+
+readingInput()
+#creatingNode(initial_state)
+bfs()

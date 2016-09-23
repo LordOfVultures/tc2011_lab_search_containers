@@ -90,7 +90,7 @@ def a_star():
     visited.append(head)
 
     while True:
-        if not frontier:
+        if len(frontier) == 0:
             return False
         node = frontier.pop()
         if node.is_goal:
@@ -101,14 +101,14 @@ def a_star():
             for k, new_stack in enumerate(state):
                 aux_state = copy.deepcopy(state)
                 if j != k and node.path_cost > 0:
-                    if len(stack) > 0 and len(new_stack) < 3:
+                    if len(stack) > 0 and len(new_stack) < max_stack:
                         new_state, new_state_cost = move_crate(aux_state, j, k)
                         child_node = Node(new_state, state, [j, k], new_state_cost, check_end(new_state))
                         visited.append(child_node)
-                        print(child_node.state)
-                        print(child_node.path_cost)
-                        print(child_node.action)
-                        print(child_node.is_goal)
+                        #print(child_node.state)
+                        #print(child_node.path_cost)
+                        #print(child_node.action)
+                        #print(child_node.is_goal)
                         if child_node not in visited and not any(node.state == child_node.state for n in frontier):
                             frontier.append(child_node)
                             frontier.sort(key = operator.attrgetter('path_cost'), reverse = False)
@@ -150,7 +150,7 @@ frontier = []
 solution = []
 solution_cost = 0
 a_star()
-if solution is not None:
+if len(solution) > 0:
     print(solution_cost)
     print(solution)
 else:

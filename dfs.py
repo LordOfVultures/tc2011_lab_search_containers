@@ -88,13 +88,10 @@ def print_path(node):
         actual = actual.parent
     print(steps)
 
-"""problem = input()
+problem = input()
 initial_state = Node(problem['initial_state'], None, None, 0)
 end_state = problem['end_state']
-max_stack = problem['max_stack']"""
-initial_state = Node([['A'], ['B'], ['C'], [], [], []], None, None, 0)
-end_state = [[], [], [], ['A'], ['B'], ['C']]
-max_stack = 3
+max_stack = problem['max_stack']
 head = initial_state
 frontier = []
 aux = dfs()

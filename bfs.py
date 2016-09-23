@@ -54,11 +54,11 @@ def bfs():
     forExploring.append(initial_state)
     visited.append(initial_state)
     current_node =[]
-    while(forExploring or current_node != end_state ):#if not empty
+    while(forExploring ):#if not empty
         current_node=forExploring.pop(0)#getting first element of the list
         print ("Current",current_node)
         creatingNode(current_node)        
-        comparingLists(visited,leaves_nodes)
+        
     
 
 def creatingNode(state):
@@ -67,27 +67,43 @@ def creatingNode(state):
     
     for element in range(len(state)): 
         #print ("Elemento:",state[element]) 
-               
+        
+        
         for listNode in range(len(state)):
-            list_Nodes=copy.deepcopy(state) #copying the state
-            list_Nodes[element].remove(state[element][0]) #remove the element from the list            
             
-            if (element != listNode):                
-                list_Nodes[listNode].append(state[element][0]) #adding the new element to the assigned space
-                #print ("        Final",list_Nodes)
-                leaves_nodes.append(list_Nodes) #Saving Result
+            list_Nodes=copy.deepcopy(state) #copying the state
+            if (list_Nodes[element]):
+                #print(list_Nodes)
+                
+                if (list_Nodes[element]): #in case the spot is not empty
+                    #list_Nodes[element].remove(state[element][0]) #remove the element from the list                       
+                    list_Nodes[element].pop(0)
+                
+                
+                if (element != listNode ):  
+                    
+                    #if (not list_Nodes[listNode]):#is empty
+                    # list_Nodes[listNode].append("")
+                    #print ( state[element][0] , state[listNode])
+                                                        
+                    list_Nodes[listNode].append(state[element][0]) #adding the new element to the assigned space
+                    #print ("        Final",list_Nodes)
+                    leaves_nodes.append(list_Nodes) #Saving Result
+    
+    comparingLists(visited,leaves_nodes)
     
 def comparingLists(listVisited , listNewNodes):
         global visited
-        newNodes=[] 
+        
         
         for nodeVisited in range(len(listVisited)):
             for nodeNew in range(len(listNewNodes)):
                 if (cmp(listVisited[nodeVisited], listNewNodes[nodeNew]) != 0): #if the nodes are not in the visited list
-                    newNodes.append(listNewNodes[nodeNew]) #adding new nodes to newNodes
-        forExploring.append(newNodes) #adding new nodes to forExploring
-        visited.append(newNodes) #adding new nodes to visited
-
+                    forExploring.append(listNewNodes[nodeNew]) #adding new nodes to forExploring
+                    visited.append(listNewNodes[nodeNew]) #adding new nodes to visited
+        
+        #print(leaves_nodes)
+        
 readingInput()
-#creatingNode(initial_state)
+#creatingNode( [['A'], ['B'], ['C']])
 bfs()

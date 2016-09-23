@@ -45,6 +45,7 @@ def input():
     return problem
 
 def find_crate(crate, state):
+    #method to find the crate that should move in a given state
 	for i, stack in enumerate(state):
 		try:
 			j = stack.index(crate)
@@ -52,6 +53,14 @@ def find_crate(crate, state):
 			continue
 		return i, j
 	return None
+
+def move_crate(state, move_from, move_to):
+    #moves the crate on top from one stack to another
+    crate = state[move_from][-1]
+    del state[move_from][-1]
+    state[move_to].append(crate)
+    cost = fcost(crate, state)
+    return state, cost
 
 def gcost(crate, state):
 	#cost of rising and put down the crate = 0.5, cost of moving the crate between stack = 1 * distance
@@ -63,7 +72,7 @@ def hcost(state):
 	missplaced = 0
 	for i, stack in enumerate(state):
 		for j, crate in enumerate(stack):
-			if find_crate(crate, state) != find_crate(crate, end_state):
+			if find_crate(crate, state) != find_crate(crate, problem['end_state']):
 				missplaced += 1
 	return missplaced
 
@@ -71,62 +80,78 @@ def fcost(crate, state):
 	value = gcost(crate, state) + hcost(state)
 	return value
 
-def a_star_rec(head, visited):
-    node = head
-    nodestate = node.state
-    stateLen = len(nodestate)
-    cost = node.path_cost
-    if(nodestate == end_state):
-        return node
-    else:
-        for i in range(0, stateLen):
-            for j in range(0, stateLen):
-                if (i != j and (len(nodestate[j])) > 0 and (len(nodestate[i])) < max_stack):
-                    nstate = copy.deepcopy(nodestate)
-                    nstate[i].append(nstate[j].pop())
-                    if (not(visited.count(nstate))):
-                        actions = [i, j]
-                        ncost = fcost(nstate[j][len(nstate[j]) - 1], nstate)
-                        if nstate is not problem['end_state']:
-                            nNode = Node(nstate, node, actions, ncost, False)
-                        else:
-                            nNode = Node(nstate, node, actions, ncost, True)
-                        visited.append(nstate)
-                        aux = a_star_rec(nNode, visited)
-                        if(aux != None):
-                            return aux
-    return None
-
 def a_star():
     visited = []
-    aux = a_star_rec(head, visited)
-    if(aux != None):
-        return aux
-    else:
-        return None
+    head = initial_state
+    frontier.append(head)
+    state = head.state
+    state_cost = head.path_cost
+    frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
+    visited.append(head)
 
-def print_path(node):
+    while True:
+        if not frontier:
+            return False
+        node = frontier.pop()
+        if node.is_goal:
+            solution = generate_path(node)
+            return True
+        visited.append(node)
+        for j, stack in enumerate(state):
+            for k, new_stack in enumerate(state):
+                aux_state = copy.deepcopy(state)
+                if j != k and node.path_cost > 0:
+                    if len(stack) > 0 and len(new_stack) < 3:
+                        new_state, new_state_cost = move_crate(aux_state, j, k)
+                        child_node = Node(new_state, state, [j, k], new_state_cost, check_end(new_state))
+                        visited.append(child_node)
+                        print(child_node.state)
+                        print(child_node.path_cost)
+                        print(child_node.action)
+                        print(child_node.is_goal)
+                        if child_node not in visited and not any(node.state == child_node.state for n in frontier):
+                            frontier.append(child_node)
+                            frontier.sort(key = operator.attrgetter('path_cost'), reverse = False)
+                        elif child_node not in visited:
+                            for node in frontier:
+                                if node.state == child_node.state and node.path_cost > child_node.path_cost:
+                                    frontier.remove(node)
+                                    frontier.append(child_node)
+                                    frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
+
+def generate_path(node):
     actual = node
     steps = []
     if(node != None):
-        print(node.path_cost)
+        solution_cost = node.path_cost
     while(actual != None):
         if(actual.parent != None):
             steps.append(actual.action)
         actual = actual.parent
-    print(steps)
+    return steps
+
+def check_end(state):
+	#Checks if a state is an end state
+	for i, element in enumerate(state):
+		if end_state != ['X']:
+			if element != end_state[i]:
+				return False
+	return True
 
 problem = input()
 if problem['initial_state'] == problem['end_state']:
-    initial_state = Node(problem['initial_state'], None, None, 0, True)
+    initial_state = Node(problem['initial_state'], None, None, hcost(problem['initial_state']), True)
 else:
-    initial_state = Node(problem['initial_state'], None, None, 0, False)
+    initial_state = Node(problem['initial_state'], None, None, hcost(problem['initial_state']), False)
 end_state = problem['end_state']
 max_stack = problem['max_stack']
 head = initial_state
 frontier = []
-aux = a_star()
-if aux is not None:
-    print_path(aux)
+solution = []
+solution_cost = 0
+a_star()
+if solution is not None:
+    print(solution_cost)
+    print(solution)
 else:
     print("No solution found")

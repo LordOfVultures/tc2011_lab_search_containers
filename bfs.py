@@ -6,7 +6,6 @@ end_state = []
 visited = []
 forExploring = []
 max_stack = []
-cost = 0
 
 
 class Node():
@@ -20,7 +19,7 @@ class Node():
 # function that reads input
 def readingInput():
     input = fileinput.input()
-    #archi = open('Test1.txt', 'r')
+    # archi = open('Test1.txt', 'r')
     global end_state
     global initial_state
     global max_stack
@@ -56,8 +55,8 @@ def readingInput():
                 if (end_state[i] == ['']):
                     end_state[i].pop()
             print(end_state)
-
-    #archi.close()
+            break
+            # archi.close()
 
 
 def bfs():
@@ -69,10 +68,10 @@ def bfs():
     forExploring.append(initial_state)
     visited.append(initial_state.state)
     current_node = Node(None, None, None, 0)
-    
+
     while (forExploring and current_node.state != end_state):  # if not empty
         current_node = forExploring.pop(0)  # getting first element of the list
-        #print ("Current",current_node.state)
+        # print ("Current",current_node.state)
         creatingNode(current_node)
 
         if (current_node.state == end_state):  # if exito
@@ -80,7 +79,6 @@ def bfs():
 
         if (not forExploring and current_node.state != end_state):  # if empty
             print("No solution found")
-        
 
 
 # method for comparing the nodes with the end node
@@ -95,23 +93,23 @@ def comparingNode(endNode, currentNode):
 
 def creatingNode(currentNode):
     leaves_nodes = []  # variable that has the results of the nodes
-
+    cost = currentNode.path_cost
     for element in range(len(currentNode.state)):
         for listNode in range(len(currentNode.state)):
             list_Nodes = copy.deepcopy(currentNode.state)  # copying the state
             if (list_Nodes[element] and element != listNode and len(list_Nodes[listNode]) < max_stack):  # if not empty
 
                 list_Nodes[element].pop(0)  # remove the element from the list
-                #if (element != listNode and len(list_Nodes[listNode]) < max_stack):  # not moving to the same place and the lenght is less or equal to stack
+                # if (element != listNode and len(list_Nodes[listNode]) < max_stack):  # not moving to the same place and the lenght is less or equal to stack
                 list_Nodes[listNode].append(currentNode.state[element][0])  # adding the new element to the assigned space
-                if(not(visited.count(list_Nodes))):
+                if (not (visited.count(list_Nodes))):
                     newCost = 1 + abs(element - listNode) + cost
                     newNode = Node(list_Nodes, currentNode, [element, listNode], newCost)
                     forExploring.append(newNode)  # adding new nodes to forExploring
                     visited.append(list_Nodes)  # adding new nodes to visited
-                #leaves_nodes.append(newNode)  # Saving Result
+                    # leaves_nodes.append(newNode)  # Saving Result
 
-    #comparingLists(visited, leaves_nodes)
+                    # comparingLists(visited, leaves_nodes)
 
 
 # method for comparing lists and adding to visited and for exploring
@@ -121,7 +119,8 @@ def comparingLists(listVisited, listNewNodes):
 
     for nodeVisited in range(0, len(listVisited)):
         for nodeNew in range(0, len(listNewNodes)):
-            if (cmp(listVisited[nodeVisited].state, listNewNodes[nodeNew].state) != 0):  # if the nodes are not in the visited list
+            if (cmp(listVisited[nodeVisited].state,
+                    listNewNodes[nodeNew].state) != 0):  # if the nodes are not in the visited list
                 forExploring.append(listNewNodes[nodeNew])  # adding new nodes to forExploring
                 visited.append(listNewNodes[nodeNew])  # adding new nodes to visited
 

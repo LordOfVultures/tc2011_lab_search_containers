@@ -69,10 +69,10 @@ def bfs():
     forExploring.append(initial_state)
     visited.append(initial_state.state)
     current_node = Node(None, None, None, 0)
-    i = 0
+    
     while (forExploring and current_node.state != end_state):  # if not empty
         current_node = forExploring.pop(0)  # getting first element of the list
-        # print ("Current",current_node.state)
+        #print ("Current",current_node.state)
         creatingNode(current_node)
 
         if (current_node.state == end_state):  # if exito
@@ -80,9 +80,7 @@ def bfs():
 
         if (not forExploring and current_node.state != end_state):  # if empty
             print("No solution found")
-        #if (i == 2):
-        #    break
-        #i = i + 1
+        
 
 
 # method for comparing the nodes with the end node
@@ -109,7 +107,6 @@ def creatingNode(currentNode):
                 if(not(visited.count(list_Nodes))):
                     newCost = 1 + abs(element - listNode) + cost
                     newNode = Node(list_Nodes, currentNode, [element, listNode], newCost)
-                    print ("--------Final", newNode.state)
                     forExploring.append(newNode)  # adding new nodes to forExploring
                     visited.append(list_Nodes)  # adding new nodes to visited
                 #leaves_nodes.append(newNode)  # Saving Result
@@ -124,13 +121,9 @@ def comparingLists(listVisited, listNewNodes):
 
     for nodeVisited in range(0, len(listVisited)):
         for nodeNew in range(0, len(listNewNodes)):
-
             if (cmp(listVisited[nodeVisited].state, listNewNodes[nodeNew].state) != 0):  # if the nodes are not in the visited list
-                print ("ListaC", listNewNodes[nodeNew].state)
                 forExploring.append(listNewNodes[nodeNew])  # adding new nodes to forExploring
                 visited.append(listNewNodes[nodeNew])  # adding new nodes to visited
-
-    print("FINAL ITERACION")
 
 
 def print_path(node):

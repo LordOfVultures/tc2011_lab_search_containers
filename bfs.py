@@ -19,14 +19,14 @@ class Node():
 
 # function that reads input
 def readingInput():
-    # input = fileinput.input()
-    archi = open('Test1.txt', 'r')
+    input = fileinput.input()
+    #archi = open('Test1.txt', 'r')
     global end_state
     global initial_state
     global max_stack
     i = 0
     # for line in input:  # read line by line of stdin
-    for line in archi.readlines():
+    for line in input:
         i += 1
         if i == 1:  # reads first line, which contains maximum stack height
             max_stack = int(line.strip())
@@ -57,7 +57,7 @@ def readingInput():
                     end_state[i].pop()
             print(end_state)
 
-    archi.close()
+    #archi.close()
 
 
 def bfs():

@@ -39,6 +39,42 @@ def read_problem():
 	problem = SearchSpace(initial_state, end_state, max_stack)
 	return problem
 
+def gcost(crate, state):
+	#cost of rising and put down the crate = 0.5, cost of moving the crate between stack = 1 * distance
+	value = 0.5 + abs(find_crate(crate, state)[0] - find_crate(crate, problem.initial_state)[0]) + 0.5
+	return value
+
+def hcost(state):
+	#Heuristic: the number of missplaced creates
+	missplaced = 0
+	for i, stack in enumerate(state):
+		for j, crate in enumerate(stack):
+			if find_crate(crate, state) != find_crate(crate, problem.end_state):
+				missplaced += 1
+	return missplaced
+
+def fcost(crate, state):
+	value = gcost(crate, state) + hcost(state)
+	return value
+
+def find_crate(crate, state):
+    #method to find the crate that should move in a given state
+	for i, stack in enumerate(state):
+		try:
+			j = stack.index(crate)
+		except ValueError:
+			continue
+		return i, j
+	return None
+
+def move_crate(state, move_from, move_to):
+    #moves the crate on top from one stack to another
+    crate = state[move_from][-1]
+    del state[move_from][-1]
+    state[move_to].append(crate)
+    cost = fcost(crate, state)
+    return state, cost
+
 def check_end(state):
 	#Checks if a state is an end state
 	for i, element in enumerate(state):
@@ -47,8 +83,47 @@ def check_end(state):
 				return False
 	return True
 
+def build_solution(node):
+	#builds a list with al required steps to reach the end state
+	path = []
+	total_cost = 0
+	while(node.parent != None):
+		path.append(node.action)
+		total_cost = node.path_cost
+		node = node.parent
+	return total_cost, path
+
 def a_star_search():
-	return
+	visited = []
+	path = []
+	total_cost = 0
+	while True:
+		if len(frontier) == 0:
+			return total_cost, path
+		node = frontier.pop()
+		if node.is_goal:
+			total_cost, path = build_solution(node)
+		visited.append(node.state)
+		for i, stack in enumerate(node.state):
+			for j, new_stack in enumerate(node.state):
+				temp_state = copy.deepcopy(node.state)
+				if i != j and len(stack) > 0 and len(new_stack) < problem.max_stack:
+					new_state, new_state_cost = move_crate(temp_state, i, j)
+					child_node = Node(new_state, node.state, [i, j], new_state_cost, check_end(new_state))
+					print(child_node.state)
+					print(child_node.action)
+					print(child_node.path_cost)
+					print(child_node.is_goal)
+					if child_node.state not in visited and not any(n.state == child_node.state for n in frontier):
+						frontier.append(child_node)
+						frontier.sort(key = operator.attrgetter('path_cost'), reverse = False)
+					else:
+						for n in frontier:
+							if n.state == child_node.state and n.path_cost > child_node.path_cost:
+								frontier.remove(n)
+								frontier.append(child_node)
+								frontier.sort(key = operator.attrgetter('path_cost'), reverse = False)
+	return total_cost, path
 
 #read the problem via stdin
 problem = read_problem()
@@ -57,10 +132,8 @@ problem = read_problem()
 #print(problem.max_stack)
 #Check if first node is an end state
 frontier = [Node(problem.initial_state, None, None, 0, check_end(problem.initial_state))]
-solution = []
-solution_cost = 0
-#Start SearchSpace
-a_star_search()
+#Search
+solution_cost, solution = a_star_search()
 #Print solution
 if len(solution) > 0:
     print(solution_cost)

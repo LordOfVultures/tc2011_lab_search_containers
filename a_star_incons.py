@@ -87,16 +87,19 @@ def a_star():
     state = head.state
     state_cost = head.path_cost
     frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
-    visited.append(head)
+    visited.append(head.state)
 
     while True:
         if len(frontier) == 0:
             return False
         node = frontier.pop()
+        print(node.state)
+        print(node.action)
+        print(node.path_cost)
         if node.is_goal:
             solution = generate_path(node)
             return True
-        visited.append(node)
+        visited.append(node.state)
         for j, stack in enumerate(state):
             for k, new_stack in enumerate(state):
                 aux_state = copy.deepcopy(state)
@@ -104,20 +107,10 @@ def a_star():
                     if len(stack) > 0 and len(new_stack) < max_stack:
                         new_state, new_state_cost = move_crate(aux_state, j, k)
                         child_node = Node(new_state, state, [j, k], new_state_cost, check_end(new_state))
-                        visited.append(child_node)
-                        #print(child_node.state)
-                        #print(child_node.path_cost)
-                        #print(child_node.action)
-                        #print(child_node.is_goal)
-                        if child_node not in visited and not any(node.state == child_node.state for n in frontier):
+                        if child_node.state not in visited:
                             frontier.append(child_node)
-                            frontier.sort(key = operator.attrgetter('path_cost'), reverse = False)
-                        elif child_node not in visited:
-                            for node in frontier:
-                                if node.state == child_node.state and node.path_cost > child_node.path_cost:
-                                    frontier.remove(node)
-                                    frontier.append(child_node)
-                                    frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
+                            visited.append(child_node.state)
+                            frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
 
 def generate_path(node):
     actual = node

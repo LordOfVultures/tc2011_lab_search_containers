@@ -6,6 +6,7 @@ end_state = []
 visited = []
 forExploring = []
 max_stack = []
+#cost = 0
 
 
 class Node():
@@ -42,7 +43,7 @@ def readingInput():
                 if (initial_state[i] == ['']):
                     initial_state[i].pop()
             print(initial_state)
-        elif i == 3:  # reads the third line, which contains the end state
+        else:  # reads the third line, which contains the end state
             # the following block formats the line and creates the end state data structure
             end_state = line.strip()
             end_state = end_state.replace(" ", "")

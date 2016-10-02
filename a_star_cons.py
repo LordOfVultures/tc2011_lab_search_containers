@@ -3,7 +3,7 @@ import operator
 import copy
 import sys
 
-class Node():
+class Node:
     def __init__(self, state, parent, action, path_cost, is_goal):
         self.state = state
         self.parent = parent
@@ -11,7 +11,7 @@ class Node():
         self.path_cost = path_cost
         self.is_goal = is_goal
 
-class SearchSpace():
+class SearchSpace:
 	def __init__(self, initial_state, end_state, max_stack):
 		self.initial_state = initial_state
 		self.end_state = end_state
@@ -77,9 +77,9 @@ def move_crate(state, move_from, move_to):
 
 def check_end(state):
 	#Checks if a state is an end state
-	for i, element in enumerate(state):
-		if element != ['X']:
-			if element != problem.end_state[i]:
+	for i, stack in enumerate(state):
+		if problem.end_state[i] != ['X']:
+			if stack != problem.end_state[i]:
 				return False
 	return True
 
@@ -87,8 +87,8 @@ def build_solution(node):
 	#builds a list with al required steps to reach the end state
 	path = []
 	total_cost = 0
-	while(node.parent != None):
-		path.append(node.action)
+	while node.parent:
+		path.append("(" + str(node.action[0]) + ", " + str(node.action[1]) + "); ")
 		total_cost = node.path_cost
 		node = node.parent
 	return total_cost, path
@@ -109,20 +109,16 @@ def a_star_search():
 				temp_state = copy.deepcopy(node.state)
 				if i != j and len(stack) > 0 and len(new_stack) < problem.max_stack:
 					new_state, new_state_cost = move_crate(temp_state, i, j)
-					child_node = Node(new_state, node.state, [i, j], new_state_cost, check_end(new_state))
-					print(child_node.state)
-					print(child_node.action)
-					print(child_node.path_cost)
-					print(child_node.is_goal)
+					child_node = Node(new_state, node, [i, j], new_state_cost, check_end(new_state))
 					if child_node.state not in visited and not any(n.state == child_node.state for n in frontier):
 						frontier.append(child_node)
-						frontier.sort(key = operator.attrgetter('path_cost'), reverse = False)
+						frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
 					else:
 						for n in frontier:
 							if n.state == child_node.state and n.path_cost > child_node.path_cost:
 								frontier.remove(n)
 								frontier.append(child_node)
-								frontier.sort(key = operator.attrgetter('path_cost'), reverse = False)
+								frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
 	return total_cost, path
 
 #read the problem via stdin
@@ -137,6 +133,6 @@ solution_cost, solution = a_star_search()
 #Print solution
 if len(solution) > 0:
     print(solution_cost)
-    print(solution)
+    print(''.join(elem for elem in solution))
 else:
     print("No solution found")

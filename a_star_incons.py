@@ -88,7 +88,7 @@ def build_solution(node):
 	path = []
 	total_cost = 0
 	while node.parent:
-		path.append(node.action)
+		path.append("(" + str(node.action[0]) + ", " + str(node.action[1]) + "); ")
 		total_cost = node.path_cost
 		node = node.parent
 	return total_cost, path
@@ -133,6 +133,6 @@ solution_cost, solution = a_star_search()
 #Print solution
 if len(solution) > 0:
     print(solution_cost)
-    print(solution)
+    print(''.join(elem for elem in solution))
 else:
     print("No solution found")

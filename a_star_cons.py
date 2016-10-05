@@ -39,9 +39,9 @@ def read_problem():
 	problem = SearchSpace(initial_state, end_state, max_stack)
 	return problem
 
-def gcost(crate, state):
+def gcost(crate, state, prevstate):
 	#cost of rising and put down the crate = 0.5, cost of moving the crate between stack = 1 * distance
-	value = 1 + abs(find_crate(crate, state)[0] - find_crate(crate, problem.initial_state)[0])
+	value = 1 + abs(find_crate(crate, state)[0] - find_crate(crate, prevstate)[0])
 	return value
 
 def hcost(state):
@@ -53,8 +53,8 @@ def hcost(state):
 				missplaced += 1
 	return missplaced
 
-def fcost(crate, state):
-    value = gcost(crate, state) + hcost(state)
+def fcost(crate, state, prevstate):
+    value = gcost(crate, state, prevstate) + hcost(state)
     return value
 
 def find_crate(crate, state):
@@ -69,10 +69,11 @@ def find_crate(crate, state):
 
 def move_crate(state, move_from, move_to):
     #moves the crate on top from one stack to another
+    prevstate = copy.deepcopy(state)
     crate = state[move_from][-1]
     del state[move_from][-1]
     state[move_to].append(crate)
-    cost = fcost(crate, state)
+    cost = fcost(crate, state, prevstate)
     return state, cost
 
 def check_end(state):
@@ -89,7 +90,7 @@ def build_solution(node):
     total_cost = node.path_cost
     while node.parent:
         path.insert(0, "(" + str(node.action[0]) + ", " + str(node.action[1]) + "); ")
-        #print(hcost(node.state))
+        print(hcost(node.state))
         total_cost -= hcost(node.state)
         node = node.parent
     return total_cost, path

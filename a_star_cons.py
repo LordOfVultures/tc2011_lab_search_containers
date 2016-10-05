@@ -54,8 +54,8 @@ def hcost(state):
 	return missplaced
 
 def fcost(crate, state):
-	value = gcost(crate, state) + hcost(state)
-	return value
+    value = gcost(crate, state) + hcost(state)
+    return value
 
 def find_crate(crate, state):
     #method to find the crate that should move in a given state
@@ -84,42 +84,44 @@ def check_end(state):
 	return True
 
 def build_solution(node):
-	#builds a list with al required steps to reach the end state
-	path = []
-	total_cost = 0
-	while node.parent:
-		path.append("(" + str(node.action[0]) + ", " + str(node.action[1]) + "); ")
-		total_cost = node.path_cost
-		node = node.parent
-	return total_cost, path
+    #builds a list with al required steps to reach the end state
+    path = []
+    total_cost = node.path_cost
+    while node.parent:
+        path.insert(0, "(" + str(node.action[0]) + ", " + str(node.action[1]) + "); ")
+        node = node.parent
+    return total_cost, path
 
 def a_star_search():
-	visited = []
-	path = []
-	total_cost = 0
-	while True:
-		if len(frontier) == 0:
-			return total_cost, path
-		node = frontier.pop()
-		if node.is_goal:
-			total_cost, path = build_solution(node)
-		visited.append(node.state)
-		for i, stack in enumerate(node.state):
-			for j, new_stack in enumerate(node.state):
-				temp_state = copy.deepcopy(node.state)
-				if i != j and len(stack) > 0 and len(new_stack) < problem.max_stack:
-					new_state, new_state_cost = move_crate(temp_state, i, j)
-					child_node = Node(new_state, node, [i, j], new_state_cost, check_end(new_state))
-					if child_node.state not in visited and not any(n.state == child_node.state for n in frontier):
-						frontier.append(child_node)
-						frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
-					else:
-						for n in frontier:
-							if n.state == child_node.state and n.path_cost > child_node.path_cost:
-								frontier.remove(n)
-								frontier.append(child_node)
-								frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
-	return total_cost, path
+    visited = []
+    path = []
+    total_cost = 0
+    while True:
+        if len(frontier) == 0:
+            return total_cost, path
+        node = frontier.pop()
+        print(node.state)
+        print(node.path_cost)
+        if node.is_goal:
+            print(node.state)
+            total_cost, path = build_solution(node)
+        visited.append(node.state)
+        for i, stack in enumerate(node.state):
+            for j, new_stack in enumerate(node.state):
+                temp_state = copy.deepcopy(node.state)
+                if i != j and len(stack) > 0 and len(new_stack) < problem.max_stack:
+                    new_state, new_state_cost = move_crate(temp_state, i, j)
+                    child_node = Node(new_state, node, [i, j], new_state_cost + node.path_cost, check_end(new_state))
+                    if child_node.state not in visited and not any(n.state == child_node.state for n in frontier):
+                        frontier.append(child_node)
+                        frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
+                    else:
+                        for n in frontier:
+                            if n.state == child_node.state and n.path_cost > child_node.path_cost:
+                                frontier.remove(n)
+                                frontier.append(child_node)
+                                frontier.sort(key = operator.attrgetter('path_cost'), reverse = True)
+    return total_cost, path
 
 #read the problem via stdin
 problem = read_problem()

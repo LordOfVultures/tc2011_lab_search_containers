@@ -45,13 +45,8 @@ def gcost(crate, state):
 	return value
 
 def hcost(state):
-	#Heuristic: the number of missplaced creates
-	missplaced = 0
-	for i, stack in enumerate(state):
-		for j, crate in enumerate(stack):
-			if find_crate(crate, state) != find_crate(crate, problem.end_state):
-				missplaced += 1
-	return missplaced
+	#Heuristic: constant number 2
+	return 2
 
 def fcost(crate, state):
 	value = gcost(crate, state) + hcost(state)

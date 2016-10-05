@@ -41,7 +41,7 @@ def read_problem():
 
 def gcost(crate, state):
 	#cost of rising and put down the crate = 0.5, cost of moving the crate between stack = 1 * distance
-	value = 0.5 + abs(find_crate(crate, state)[0] - find_crate(crate, problem.initial_state)[0]) + 0.5
+	value = 1 + abs(find_crate(crate, state)[0] - find_crate(crate, problem.initial_state)[0])
 	return value
 
 def hcost(state):
@@ -89,6 +89,8 @@ def build_solution(node):
     total_cost = node.path_cost
     while node.parent:
         path.insert(0, "(" + str(node.action[0]) + ", " + str(node.action[1]) + "); ")
+        #print(hcost(node.state))
+        total_cost -= hcost(node.state)
         node = node.parent
     return total_cost, path
 
@@ -100,10 +102,7 @@ def a_star_search():
         if len(frontier) == 0:
             return total_cost, path
         node = frontier.pop()
-        print(node.state)
-        print(node.path_cost)
         if node.is_goal:
-            print(node.state)
             total_cost, path = build_solution(node)
         visited.append(node.state)
         for i, stack in enumerate(node.state):

@@ -90,7 +90,7 @@ def build_solution(node):
     total_cost = node.path_cost
     while node.parent:
         path.insert(0, "(" + str(node.action[0]) + ", " + str(node.action[1]) + "); ")
-        print(hcost(node.state))
+        #print(hcost(node.state))
         total_cost -= hcost(node.state)
         node = node.parent
     return total_cost, path

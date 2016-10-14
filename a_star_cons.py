@@ -135,6 +135,6 @@ solution_cost, solution = a_star_search()
 #Print solution
 if len(solution) > 0:
     print(solution_cost)
-    print(''.join(elem for elem in solution))
+    print(''.join(elem for elem in solution)[:-1][:-1])
 else:
     print("No solution found")
